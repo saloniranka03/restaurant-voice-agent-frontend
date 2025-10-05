@@ -1,46 +1,58 @@
 /**
- * Global styles for the application
- * Imports Tailwind CSS utilities
+ * Global Stylesheet
+ * 
+ * This file contains:
+ * 1. Tailwind CSS imports (base, components, utilities)
+ * 2. Custom scrollbar styling for webkit browsers
+ * 3. Smooth scrolling behavior
+ * 4. Base font configuration
+ * 
+ * Tailwind processes this file and generates utility classes
  */
 
+/* Import Tailwind CSS layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar styling */
+/* ==================== CUSTOM SCROLLBAR ==================== */
+/* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 8px; /* Vertical scrollbar width */
+  height: 8px; /* Horizontal scrollbar height */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f1f1; /* Light gray track */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: #888; /* Medium gray thumb */
+  border-radius: 4px; /* Rounded corners */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #555; /* Darker on hover */
 }
 
-/* Smooth scrolling */
+/* ==================== SMOOTH SCROLLING ==================== */
+/* Enables smooth scrolling for anchor links and programmatic scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Remove default margins */
+/* ==================== BASE STYLES ==================== */
+/* Reset default margins and set system font stack */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased; /* Smooth fonts on macOS */
+  -moz-osx-font-smoothing: grayscale; /* Smooth fonts on Firefox macOS */
 }
 
+/* Monospace font for code elements */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

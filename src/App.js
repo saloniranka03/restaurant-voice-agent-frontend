@@ -1,45 +1,17 @@
-// ==================== OPTION 1: SIMPLE TAILWIND TEST ====================
-// Use this FIRST to verify Tailwind CSS is working
-// Save as: src/App.js
-/*
-import React from "react";
-
-function App() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-2xl p-12 text-center max-w-md">
-        <h1 className="text-5xl font-bold text-gray-800 mb-4">
-          🎉 Tailwind Works!
-        </h1>
-        <p className="text-gray-600 text-lg mb-6">
-          If you can see this styled text with a gradient background, Tailwind
-          CSS is configured correctly!
-        </p>
-        <div className="space-y-3">
-          <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-            Primary Button
-          </button>
-          <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-            Success Button
-          </button>
-          <button className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-            Danger Button
-          </button>
-        </div>
-        <p className="text-sm text-gray-500 mt-6">
-          ✅ Ready to replace with full restaurant app!
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default App;
-*/
-
-// ==================== OPTION 2: FULL RESTAURANT DASHBOARD ====================
-// After confirming Tailwind works, replace the above with this complete app
-// Save as: src/App.js
+/**
+ * Main Application Component - Restaurant Reservation Dashboard
+ *
+ * This is the primary component for Chaat Corner's reservation management system.
+ *
+ * Features:
+ * - Dashboard view showing today's reservations and statistics
+ * - All reservations view with search and filtering capabilities
+ * - Create new reservations with form validation
+ * - Edit existing reservations
+ * - Cancel reservations with confirmation
+ * - Real-time data synchronization with backend API
+ * - Responsive design using Tailwind CSS
+ */
 
 import React, { useState, useEffect } from "react";
 import {
@@ -56,24 +28,66 @@ import {
 } from "lucide-react";
 
 export default function ReservationDashboard() {
+  // ==================== STATE MANAGEMENT ====================
+
+  /**
+   * Reservations State
+   * Stores all reservations fetched from the database
+   */
   const [reservations, setReservations] = useState([]);
+
+  /**
+   * Today's Reservations State
+   * Stores only today's confirmed reservations
+   */
   const [todayReservations, setTodayReservations] = useState([]);
+
+  /**
+   * Statistics State
+   * Stores dashboard metrics (today's count, total count, cancelled count)
+   */
   const [stats, setStats] = useState({
     todayReservations: 0,
     totalReservations: 0,
     cancelledToday: 0,
   });
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [loading, setLoading] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedReservation, setSelectedReservation] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterDate, setFilterDate] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
 
+  /**
+   * UI State Variables
+   */
+  const [activeTab, setActiveTab] = useState("dashboard"); // Current tab: "dashboard" or "all"
+  const [loading, setLoading] = useState(false); // Loading spinner state
+  const [showCreateModal, setShowCreateModal] = useState(false); // Create modal visibility
+  const [showEditModal, setShowEditModal] = useState(false); // Edit modal visibility
+  const [selectedReservation, setSelectedReservation] = useState(null); // Currently selected reservation for editing
+
+  /**
+   * Filter State Variables
+   */
+  const [searchTerm, setSearchTerm] = useState(""); // Search query (name, phone, or ID)
+  const [filterDate, setFilterDate] = useState(""); // Date filter
+  const [filterStatus, setFilterStatus] = useState(""); // Status filter (confirmed, cancelled, etc.)
+
+  /**
+   * Backend API Base URL
+   * Points to the NestJS backend running on port 3001
+   */
   const API_URL = "http://localhost:3001";
 
+  // ==================== LIFECYCLE HOOKS ====================
+
+  /**
+   * useEffect Hook - Data Fetching
+   *
+   * Triggers when:
+   * - Component mounts (initial load)
+   * - activeTab changes (switching between Dashboard and All Reservations)
+   *
+   * Actions:
+   * 1. Fetch dashboard statistics
+   * 2. Fetch today's reservations
+   * 3. If on "all" tab, fetch all reservations
+   */
   useEffect(() => {
     fetchStats();
     fetchTodayReservations();
@@ -82,6 +96,18 @@ export default function ReservationDashboard() {
     }
   }, [activeTab]);
 
+  // ==================== API FUNCTIONS ====================
+
+  /**
+   * Fetches Dashboard Statistics
+   *
+   * Endpoint: GET /reservations/stats
+   *
+   * Updates the stats state with:
+   * - todayReservations: Count of confirmed reservations for today
+   * - totalReservations: Total count of all reservations
+   * - cancelledToday: Count of cancelled reservations for today
+   */
   const fetchStats = async () => {
     try {
       const response = await fetch(`${API_URL}/reservations/stats`);
@@ -92,6 +118,14 @@ export default function ReservationDashboard() {
     }
   };
 
+  /**
+   * Fetches Today's Reservations
+   *
+   * Endpoint: GET /reservations/today
+   *
+   * Retrieves all confirmed reservations for today, sorted by time
+   * Used in the Dashboard view
+   */
   const fetchTodayReservations = async () => {
     try {
       const response = await fetch(`${API_URL}/reservations/today`);
@@ -102,9 +136,21 @@ export default function ReservationDashboard() {
     }
   };
 
+  /**
+   * Fetches All Reservations with Filters
+   *
+   * Endpoint: GET /reservations?status=...&date=...
+   *
+   * Applies optional filters:
+   * - status: Filter by reservation status
+   * - date: Filter by specific date
+   *
+   * Sets loading state during fetch operation
+   */
   const fetchAllReservations = async () => {
     setLoading(true);
     try {
+      // Build query string with filters
       let url = `${API_URL}/reservations?`;
       if (filterStatus) url += `status=${filterStatus}&`;
       if (filterDate) url += `date=${filterDate}`;
@@ -119,6 +165,28 @@ export default function ReservationDashboard() {
     }
   };
 
+  /**
+   * Creates a New Reservation
+   *
+   * Endpoint: POST /reservations
+   *
+   * @param {Object} formData - Reservation details from the form
+   *   - name: Customer's full name
+   *   - phone: Customer's phone number
+   *   - email: Customer's email (optional)
+   *   - partySize: Number of guests
+   *   - date: Reservation date (YYYY-MM-DD)
+   *   - time: Reservation time (e.g., "7:00 PM")
+   *   - specialRequests: Array of special requests
+   *
+   * On Success:
+   * - Closes the create modal
+   * - Refreshes stats and reservation lists
+   * - Shows success alert
+   *
+   * On Error:
+   * - Shows error message from backend
+   */
   const handleCreateReservation = async (formData) => {
     try {
       const response = await fetch(`${API_URL}/reservations`, {
@@ -143,6 +211,23 @@ export default function ReservationDashboard() {
     }
   };
 
+  /**
+   * Updates an Existing Reservation
+   *
+   * Endpoint: PATCH /reservations/:id
+   *
+   * @param {string} id - MongoDB ObjectId of the reservation
+   * @param {Object} formData - Updated reservation fields
+   *
+   * On Success:
+   * - Closes edit modal
+   * - Clears selected reservation
+   * - Refreshes all data
+   * - Shows success alert
+   *
+   * On Error:
+   * - Shows error message (e.g., no tables available for new time)
+   */
   const handleUpdateReservation = async (id, formData) => {
     try {
       const response = await fetch(`${API_URL}/reservations/${id}`, {
@@ -168,7 +253,22 @@ export default function ReservationDashboard() {
     }
   };
 
+  /**
+   * Cancels a Reservation
+   *
+   * Endpoint: DELETE /reservations/:id
+   *
+   * @param {string} id - MongoDB ObjectId of the reservation
+   *
+   * Shows confirmation dialog before proceeding
+   * Sets reservation status to "cancelled" (soft delete)
+   *
+   * On Success:
+   * - Refreshes all data
+   * - Shows success alert
+   */
   const handleCancelReservation = async (id) => {
+    // Confirm before cancelling
     if (!window.confirm("Are you sure you want to cancel this reservation?"))
       return;
 
@@ -189,6 +289,14 @@ export default function ReservationDashboard() {
     }
   };
 
+  // ==================== UTILITY FUNCTIONS ====================
+
+  /**
+   * Formats a Date to Readable String
+   *
+   * @param {Date|string} date - Date object or ISO string
+   * @returns {string} Formatted date (e.g., "Mon, Jan 15, 2024")
+   */
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
       weekday: "short",
@@ -198,6 +306,16 @@ export default function ReservationDashboard() {
     });
   };
 
+  /**
+   * Filters Reservations Based on Search Term
+   *
+   * Searches in:
+   * - Customer name (case-insensitive)
+   * - Phone number
+   * - Reservation ID
+   *
+   * @returns {Array} Filtered reservation array
+   */
   const filteredReservations = reservations.filter(
     (res) =>
       res.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -205,11 +323,15 @@ export default function ReservationDashboard() {
       res.reservationId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // ==================== RENDER ====================
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* ==================== HEADER SECTION ==================== */}
       <header className="bg-white shadow-sm border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
+            {/* Logo and Restaurant Name */}
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-3 rounded-xl shadow-lg">
                 <Calendar className="h-8 w-8 text-white" />
@@ -223,6 +345,8 @@ export default function ReservationDashboard() {
                 </p>
               </div>
             </div>
+
+            {/* Create New Reservation Button */}
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
@@ -234,6 +358,7 @@ export default function ReservationDashboard() {
         </div>
       </header>
 
+      {/* ==================== TAB NAVIGATION ==================== */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
@@ -255,9 +380,12 @@ export default function ReservationDashboard() {
         </div>
       </div>
 
+      {/* ==================== MAIN CONTENT AREA ==================== */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* ==================== DASHBOARD TAB ==================== */}
         {activeTab === "dashboard" && (
           <div className="space-y-6">
+            {/* Statistics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatCard
                 title="Today's Reservations"
@@ -279,6 +407,7 @@ export default function ReservationDashboard() {
               />
             </div>
 
+            {/* Today's Schedule Section */}
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -290,11 +419,13 @@ export default function ReservationDashboard() {
               </div>
               <div className="divide-y divide-slate-200">
                 {todayReservations.length === 0 ? (
+                  // Empty state when no reservations
                   <div className="px-6 py-12 text-center text-slate-500">
                     <Calendar className="h-12 w-12 mx-auto mb-3 text-slate-300" />
                     <p>No reservations scheduled for today</p>
                   </div>
                 ) : (
+                  // List of today's reservations
                   todayReservations.map((reservation) => (
                     <ReservationCard
                       key={reservation._id}
@@ -312,10 +443,13 @@ export default function ReservationDashboard() {
           </div>
         )}
 
+        {/* ==================== ALL RESERVATIONS TAB ==================== */}
         {activeTab === "all" && (
           <div className="space-y-6">
+            {/* Search and Filter Panel */}
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Search Input */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Search
@@ -331,6 +465,8 @@ export default function ReservationDashboard() {
                     />
                   </div>
                 </div>
+
+                {/* Date Filter */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Date
@@ -342,6 +478,8 @@ export default function ReservationDashboard() {
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
+
+                {/* Status Filter */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Status
@@ -358,6 +496,8 @@ export default function ReservationDashboard() {
                   </select>
                 </div>
               </div>
+
+              {/* Apply Filters Button */}
               <button
                 onClick={fetchAllReservations}
                 className="mt-4 w-full md:w-auto px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
@@ -366,6 +506,7 @@ export default function ReservationDashboard() {
               </button>
             </div>
 
+            {/* All Reservations List */}
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -374,16 +515,19 @@ export default function ReservationDashboard() {
               </div>
               <div className="divide-y divide-slate-200">
                 {loading ? (
+                  // Loading state
                   <div className="px-6 py-12 text-center text-slate-500">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
                     <p className="mt-4">Loading reservations...</p>
                   </div>
                 ) : filteredReservations.length === 0 ? (
+                  // Empty state
                   <div className="px-6 py-12 text-center text-slate-500">
                     <Calendar className="h-12 w-12 mx-auto mb-3 text-slate-300" />
                     <p>No reservations found</p>
                   </div>
                 ) : (
+                  // List of filtered reservations
                   filteredReservations.map((reservation) => (
                     <ReservationCard
                       key={reservation._id}
@@ -402,6 +546,9 @@ export default function ReservationDashboard() {
         )}
       </main>
 
+      {/* ==================== MODALS ==================== */}
+
+      {/* Create Reservation Modal */}
       {showCreateModal && (
         <Modal
           onClose={() => setShowCreateModal(false)}
@@ -416,6 +563,7 @@ export default function ReservationDashboard() {
         </Modal>
       )}
 
+      {/* Edit Reservation Modal */}
       {showEditModal && selectedReservation && (
         <Modal onClose={() => setShowEditModal(false)} title="Edit Reservation">
           <ReservationForm
@@ -431,7 +579,20 @@ export default function ReservationDashboard() {
   );
 }
 
+// ==================== COMPONENT: StatCard ====================
+/**
+ * StatCard Component
+ *
+ * Displays a single dashboard statistic in a card format
+ * Features an icon, title, and numeric value
+ *
+ * @param {string} title - Statistic title (e.g., "Today's Reservations")
+ * @param {number} value - Numeric value to display
+ * @param {ReactElement} icon - Icon component from lucide-react
+ * @param {string} color - Color theme: "blue", "green", or "red"
+ */
 function StatCard({ title, value, icon, color }) {
+  // Color gradient mapping for different card types
   const colorClasses = {
     blue: "from-blue-500 to-blue-600",
     green: "from-green-500 to-green-600",
@@ -442,10 +603,13 @@ function StatCard({ title, value, icon, color }) {
     <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
       <div className="p-6">
         <div className="flex items-center justify-between">
+          {/* Left side: Title and Value */}
           <div>
             <p className="text-sm font-medium text-slate-600">{title}</p>
             <p className="text-3xl font-bold text-slate-900 mt-2">{value}</p>
           </div>
+
+          {/* Right side: Icon with gradient background */}
           <div
             className={`bg-gradient-to-r ${colorClasses[color]} p-3 rounded-lg`}
           >
@@ -457,7 +621,28 @@ function StatCard({ title, value, icon, color }) {
   );
 }
 
+// ==================== COMPONENT: ReservationCard ====================
+/**
+ * ReservationCard Component
+ *
+ * Displays detailed information about a single reservation
+ * Includes customer info, booking details, special requests, and action buttons
+ *
+ * @param {Object} reservation - Reservation object containing:
+ *   - _id: MongoDB ObjectId
+ *   - name: Customer name
+ *   - phone: Phone number
+ *   - partySize: Number of guests
+ *   - time: Reservation time
+ *   - tableNumber: Assigned table
+ *   - status: Reservation status
+ *   - specialRequests: Array of special requests
+ *   - reservationId: Unique identifier
+ * @param {Function} onEdit - Callback function when edit button is clicked
+ * @param {Function} onCancel - Callback function when cancel button is clicked
+ */
 function ReservationCard({ reservation, onEdit, onCancel }) {
+  // Status badge color mapping
   const statusColors = {
     confirmed: "bg-green-100 text-green-800",
     cancelled: "bg-red-100 text-red-800",
@@ -468,7 +653,9 @@ function ReservationCard({ reservation, onEdit, onCancel }) {
   return (
     <div className="px-6 py-4 hover:bg-slate-50 transition-colors">
       <div className="flex items-start justify-between">
+        {/* Left Side: Reservation Details */}
         <div className="flex-1">
+          {/* Customer Name and Status Badge */}
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold text-slate-900">
               {reservation.name}
@@ -482,25 +669,34 @@ function ReservationCard({ reservation, onEdit, onCancel }) {
             </span>
           </div>
 
+          {/* Reservation Information Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-600">
+            {/* Phone Number */}
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-slate-400" />
               <span>{reservation.phone}</span>
             </div>
+
+            {/* Party Size */}
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-slate-400" />
               <span>{reservation.partySize} guests</span>
             </div>
+
+            {/* Reservation Time */}
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <span>{reservation.time}</span>
             </div>
+
+            {/* Table Number */}
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-slate-400" />
               <span>Table {reservation.tableNumber}</span>
             </div>
           </div>
 
+          {/* Special Requests Section (if any) */}
           {reservation.specialRequests &&
             reservation.specialRequests.length > 0 && (
               <div className="mt-3">
@@ -520,24 +716,29 @@ function ReservationCard({ reservation, onEdit, onCancel }) {
               </div>
             )}
 
+          {/* Reservation ID */}
           <div className="mt-2 text-xs text-slate-500">
             ID: {reservation.reservationId}
           </div>
         </div>
 
+        {/* Right Side: Action Buttons (only for confirmed reservations) */}
         {reservation.status === "confirmed" && (
           <div className="flex items-center gap-2 ml-4">
+            {/* Edit Button */}
             <button
               onClick={onEdit}
               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              title="Edit"
+              title="Edit Reservation"
             >
               <Edit className="h-5 w-5" />
             </button>
+
+            {/* Cancel Button */}
             <button
               onClick={onCancel}
               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              title="Cancel"
+              title="Cancel Reservation"
             >
               <Trash2 className="h-5 w-5" />
             </button>
@@ -548,7 +749,27 @@ function ReservationCard({ reservation, onEdit, onCancel }) {
   );
 }
 
+// ==================== COMPONENT: ReservationForm ====================
+/**
+ * ReservationForm Component
+ *
+ * Form component for creating new reservations or editing existing ones
+ * Features:
+ * - Input validation for required fields
+ * - Date/time selection
+ * - Party size dropdown
+ * - Special requests (predefined + custom)
+ * - Form submission handling
+ *
+ * @param {Object} reservation - Existing reservation data (for edit mode, optional)
+ * @param {Function} onSubmit - Callback when form is submitted with valid data
+ * @param {Function} onCancel - Callback when cancel button is clicked
+ */
 function ReservationForm({ reservation, onSubmit, onCancel }) {
+  /**
+   * Form State
+   * Initializes with existing reservation data (edit mode) or default values (create mode)
+   */
   const [formData, setFormData] = useState({
     name: reservation?.name || "",
     phone: reservation?.phone || "",
@@ -561,8 +782,16 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
     specialRequests: reservation?.specialRequests || [],
   });
 
+  /**
+   * Custom Request Input State
+   * Temporary state for adding custom special requests
+   */
   const [newRequest, setNewRequest] = useState("");
 
+  /**
+   * Available Time Slots
+   * Restaurant operating hours in 30-minute intervals
+   */
   const timeSlots = [
     "11:00 AM",
     "11:30 AM",
@@ -584,6 +813,10 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
     "9:30 PM",
   ];
 
+  /**
+   * Common Special Requests
+   * Predefined options that users can select with one click
+   */
   const commonRequests = [
     "Window seat",
     "High chair",
@@ -596,7 +829,15 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
     "Outdoor seating",
   ];
 
+  /**
+   * Handles Form Submission
+   *
+   * Validates required fields (name, phone, date)
+   * Calls onSubmit callback with form data if valid
+   * Shows alert if validation fails
+   */
   const handleSubmit = () => {
+    // Validate required fields
     if (!formData.name || !formData.phone || !formData.date) {
       alert("Please fill in all required fields");
       return;
@@ -604,6 +845,13 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
     onSubmit(formData);
   };
 
+  /**
+   * Adds a Special Request to the Form
+   *
+   * @param {string} request - The special request to add
+   *
+   * Only adds if the request is not already in the list
+   */
   const addSpecialRequest = (request) => {
     if (!formData.specialRequests.includes(request)) {
       setFormData({
@@ -613,6 +861,11 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
     }
   };
 
+  /**
+   * Removes a Special Request from the Form
+   *
+   * @param {string} request - The special request to remove
+   */
   const removeSpecialRequest = (request) => {
     setFormData({
       ...formData,
@@ -622,7 +875,9 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
 
   return (
     <div className="space-y-6">
+      {/* Form Fields Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Full Name Input */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Full Name *
@@ -636,6 +891,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           />
         </div>
 
+        {/* Phone Number Input */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Phone Number *
@@ -651,6 +907,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           />
         </div>
 
+        {/* Email Input (Optional) */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Email (Optional)
@@ -666,6 +923,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           />
         </div>
 
+        {/* Party Size Dropdown */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Party Size *
@@ -685,6 +943,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           </select>
         </div>
 
+        {/* Date Picker */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Date *
@@ -693,11 +952,12 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
             type="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            min={new Date().toISOString().split("T")[0]}
+            min={new Date().toISOString().split("T")[0]} // Prevent booking past dates
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
           />
         </div>
 
+        {/* Time Dropdown */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Time *
@@ -716,10 +976,13 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
         </div>
       </div>
 
+      {/* Special Requests Section */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Special Requests
         </label>
+
+        {/* Predefined Request Buttons */}
         <div className="flex flex-wrap gap-2 mb-3">
           {commonRequests.map((request) => (
             <button
@@ -737,6 +1000,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           ))}
         </div>
 
+        {/* Selected Requests Display */}
         {formData.specialRequests.length > 0 && (
           <div className="mb-3">
             <p className="text-sm text-slate-600 mb-2">Selected requests:</p>
@@ -760,6 +1024,7 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
           </div>
         )}
 
+        {/* Custom Request Input */}
         <div className="flex gap-2">
           <input
             type="text"
@@ -783,7 +1048,9 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
         </div>
       </div>
 
+      {/* Form Action Buttons */}
       <div className="flex gap-4 pt-4 border-t border-slate-200">
+        {/* Submit Button */}
         <button
           type="button"
           onClick={handleSubmit}
@@ -791,6 +1058,8 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
         >
           {reservation ? "Update Reservation" : "Create Reservation"}
         </button>
+
+        {/* Cancel Button */}
         <button
           type="button"
           onClick={onCancel}
@@ -803,19 +1072,39 @@ function ReservationForm({ reservation, onSubmit, onCancel }) {
   );
 }
 
+// ==================== COMPONENT: Modal ====================
+/**
+ * Modal Component
+ *
+ * Reusable modal wrapper with backdrop overlay
+ * Features:
+ * - Fixed positioning with centered content
+ * - Semi-transparent black backdrop
+ * - Scrollable content area
+ * - Close button in header
+ * - Maximum height of 90vh to prevent overflow
+ *
+ * @param {ReactNode} children - Content to display inside modal
+ * @param {Function} onClose - Callback function when modal should close
+ * @param {string} title - Modal header title
+ */
 function Modal({ children, onClose, title }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Modal Header - Sticky at top when scrolling */}
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 transition-colors"
+            aria-label="Close modal"
           >
             <XCircle className="h-6 w-6" />
           </button>
         </div>
+
+        {/* Modal Content */}
         <div className="p-6">{children}</div>
       </div>
     </div>

@@ -1,3 +1,18 @@
+<!--
+ HTML Template
+ 
+ This is the main HTML file that serves as the template for the React app.
+ The React app is mounted on the div with id="root".
+ 
+ Features:
+ - Responsive viewport meta tag
+ - Theme color for mobile browsers
+ - SEO meta description
+ - Favicon and app icons
+ - Web app manifest for PWA support
+ - Fallback message for users with JavaScript disabled
+ -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,14 +22,22 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Chaat Corner Restaurant Reservation System"
+      content="Chaat Corner Restaurant Reservation System - Manage your restaurant bookings efficiently"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Chaat Corner - Reservations</title>
   </head>
   <body>
+    <!-- Fallback message for users with JavaScript disabled -->
     <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <!-- React app root element -->
     <div id="root"></div>
+
+    <!-- 
+      This HTML file is a template.
+      The build process will inject bundled scripts here.
+    -->
   </body>
 </html>
