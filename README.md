@@ -1,70 +1,191 @@
-# Getting Started with Create React App
+# Chaat Corner,SFO - Restaurant Reservation Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Beautiful, modern reservation management dashboard for Chaat Corner,SFO restaurant.
+
+## Features
+
+- 📊 **Dashboard View** - Today's reservations at a glance
+- 📋 **All Reservations** - Complete reservation list with filtering
+- ➕ **Create Reservations** - Easy-to-use reservation form
+- ✏️ **Edit Reservations** - Modify existing bookings
+- ❌ **Cancel Reservations** - Cancel with confirmation
+- 🔍 **Search & Filter** - Find reservations quickly
+- 📱 **Responsive Design** - Works on all devices
+- 🎨 **Beautiful UI** - Modern design with Tailwind CSS
+
+## Prerequisites
+
+- Node.js 18+ installed
+- Backend API running on http://localhost:3001
+- npm or yarn package manager
+
+## Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Or with yarn
+yarn install
+```
+
+## Running the Application
+
+```bash
+# Start development server
+npm start
+
+# Or with yarn
+yarn start
+```
+
+The app will open at `http://localhost:3000`
+
+## Building for Production
+
+```bash
+# Create production build
+npm run build
+
+# Or with yarn
+yarn build
+```
+
+## Project Structure
+
+```
+src/
+├── App.js              # Main application component
+├── App.test.js         # Component tests
+├── index.js            # Application entry point
+├── index.css           # Global styles with Tailwind
+├── reportWebVitals.js  # Performance monitoring
+└── setupTests.js       # Test configuration
+```
+
+## Configuration
+
+### Backend API URL
+
+Update the API URL in `src/App.js`:
+
+```javascript
+const API_URL = "http://localhost:3001"; // Change to your backend URL
+```
+
+### Tailwind CSS
+
+Tailwind is configured in `tailwind.config.js`. All utility classes are available.
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start` - Run development server
+- `npm build` - Build for production
+- `npm test` - Run tests
+- `npm eject` - Eject from Create React App (⚠️ one-way operation)
 
-### `npm start`
+## Components
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Main Components
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **ReservationDashboard** - Main app container
+- **StatCard** - Statistics display cards
+- **ReservationCard** - Individual reservation display
+- **ReservationForm** - Create/edit reservation form
+- **Modal** - Reusable modal wrapper
 
-### `npm test`
+### Features by Component
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**ReservationDashboard**
 
-### `npm run build`
+- State management for all reservations
+- API integration
+- Tab navigation (Dashboard/All Reservations)
+- Search and filter logic
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**StatCard**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Displays key metrics
+- Color-coded by type (blue, green, red)
+- Animated icons
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**ReservationCard**
 
-### `npm run eject`
+- Shows reservation details
+- Edit/Cancel actions
+- Status badges
+- Special requests display
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**ReservationForm**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Full validation
+- Common special requests
+- Custom request input
+- Date/time selection
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Modal**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Backdrop overlay
+- Scroll support
+- Close on backdrop click
 
-## Learn More
+## Styling
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Uses Tailwind CSS with custom configuration:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Gradient backgrounds
+- Responsive grid layouts
+- Hover effects
+- Smooth transitions
+- Custom scrollbar styling
 
-### Code Splitting
+## API Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Communicates with backend via REST API:
 
-### Analyzing the Bundle Size
+- `GET /reservations/stats` - Dashboard statistics
+- `GET /reservations/today` - Today's reservations
+- `GET /reservations` - All reservations with filters
+- `POST /reservations` - Create reservation
+- `PATCH /reservations/:id` - Update reservation
+- `DELETE /reservations/:id` - Cancel reservation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Browser Support
 
-### Making a Progressive Web App
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Troubleshooting
 
-### Advanced Configuration
+### Styles not loading
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. Check `src/index.css` has Tailwind directives
+2. Verify `tailwind.config.js` exists
+3. Restart development server
 
-### Deployment
+### API errors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Ensure backend is running
+2. Check API_URL in App.js
+3. Verify CORS is enabled on backend
+4. Check browser console for errors
 
-### `npm run build` fails to minify
+### Build errors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Clear node_modules and reinstall
+2. Delete build folder
+3. Check for conflicting dependencies
+
+## License
+
+Private - Chaat Corner Restaurant
+
+## Support
+
+For issues or questions, contact the development team.
+
+---
+
+Built with ❤️ using React and Tailwind CSS

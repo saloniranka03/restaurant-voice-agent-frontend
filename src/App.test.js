@@ -1,8 +1,12 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+/**
+ * Basic test file for App component
+ */
 
-test('renders learn react link', () => {
+import { render, screen } from "@testing-library/react";
+import App from "./App";
+
+test("renders restaurant name", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  const linkElement = screen.getByText(/LChaat Bhavan/i);
   expect(linkElement).toBeInTheDocument();
 });
