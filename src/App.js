@@ -3,20 +3,17 @@
  * MAIN APPLICATION COMPONENT - RESTAURANT RESERVATION DASHBOARD
  * ============================================================================
  *
- * This is the primary component for Chaat Corner's reservation management system.
- * Provides a complete interface for restaurant staff to manage bookings.
- *
  * FEATURES:
  * ---------
  * ✅ Real-time Dashboard - Today's reservations at a glance
+ * ✅ Voice Reservation Banner - Call to make reservations by phone
  * ✅ Reservation Management - Create, edit, cancel with ease
  * ✅ Advanced Search - Filter by date, status, customer name
- * ✅ Responsive Design using Tailwind CSS - Works on desktop, tablet, mobile
+ * ✅ Responsive Design using Tailwind CSS
  * ✅ API Authentication - Secure with API key protection
  * ✅ Error Handling - User-friendly error messages
  * ✅ Network Detection - Offline indicator and reconnection
- * ✅ Loading States - Clear feedback during operations
- * ✅ Timezone Clarity - Shows Pacific Time (PT) for all times
+ * ✅ Date Format Fix - MM/DD/YYYY input with correct database storage
  *
  * TIMEZONE HANDLING:
  * ------------------
@@ -24,10 +21,6 @@
  * Backend handles timezone conversion to ensure consistency.
  *
  * @module App
- * @requires react
- * @requires lucide-react
- * @requires ./config
- * @requires ./services/api
  */
 
 import React, { useState, useEffect } from "react";
@@ -44,6 +37,7 @@ import {
   Search,
   AlertCircle,
   WifiOff,
+  PhoneCall,
 } from "lucide-react";
 import { api, ApiError, withRetry } from "./services/api";
 import config from "./config";
@@ -317,6 +311,24 @@ export default function ReservationDashboard() {
           </div>
         </div>
       )}
+
+      {/* ==================== VOICE RESERVATION BANNER ==================== */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-center gap-3 text-sm sm:text-base">
+            <PhoneCall className="h-5 w-5 animate-pulse" />
+            <span className="font-medium">
+              Prefer to call? Make a reservation by phone at{" "}
+              <a
+                href={`tel:${config.RESERVATION_PHONE.replace(/[^0-9+]/g, "")}`}
+                className="underline hover:text-blue-200 font-semibold"
+              >
+                {config.RESERVATION_PHONE}
+              </a>
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* ==================== HEADER SECTION ==================== */}
       <header
@@ -632,8 +644,6 @@ function StatCard({ title, value, icon, color }) {
  * ============================================================================
  * RESERVATION CARD COMPONENT
  * ============================================================================
- *
- * COSMETIC CHANGE: Added "PT" timezone indicator to time display
  */
 function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
   const statusColors = {
@@ -671,7 +681,6 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
               <span>{reservation.partySize} guests</span>
             </div>
 
-            {/* COSMETIC CHANGE: Added PT timezone indicator */}
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <span>
@@ -749,17 +758,35 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
  * RESERVATION FORM COMPONENT
  * ============================================================================
  *
- * COSMETIC CHANGE: Added "(Pacific Time)" to Time label
+ * DATE FORMAT FIX: Uses type="date" which provides MM/DD/YYYY input format
+ * The date is correctly converted to YYYY-MM-DD for database storage
  */
 function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
+  // Convert database date (YYYY-MM-DD) to input format for editing
+  const getInitialDate = () => {
+    if (!reservation?.date) return "";
+
+    // Handle both Date objects and ISO strings
+    const dateObj =
+      reservation.date instanceof Date
+        ? reservation.date
+        : new Date(reservation.date);
+
+    // Get year, month, day in local timezone
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+
+    // Return in YYYY-MM-DD format for date input
+    return `${year}-${month}-${day}`;
+  };
+
   const [formData, setFormData] = useState({
     name: reservation?.name || "",
     phone: reservation?.phone || "",
     email: reservation?.email || "",
     partySize: reservation?.partySize || 2,
-    date: reservation?.date
-      ? new Date(reservation.date).toISOString().split("T")[0]
-      : "",
+    date: getInitialDate(),
     time: reservation?.time || "7:00 PM",
     specialRequests: reservation?.specialRequests || [],
   });
@@ -898,7 +925,7 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Date *
+            Date * <span className="text-slate-500 text-xs">(MM/DD/YYYY)</span>
           </label>
           <input
             type="date"
@@ -910,7 +937,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           />
         </div>
 
-        {/* COSMETIC CHANGE: Added "(Pacific Time)" to label */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Time * <span className="text-slate-500">(Pacific Time)</span>
