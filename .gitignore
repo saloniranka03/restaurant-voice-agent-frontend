@@ -1,18 +1,4 @@
-/**
- * Git Ignore Configuration
- * 
- * Specifies intentionally untracked files that Git should ignore.
- * 
- * Categories:
- * 1. Dependencies (node_modules)
- * 2. Build outputs (build/, dist/)
- * 3. Environment files (.env*)
- * 4. Log files (*.log)
- * 5. OS files (.DS_Store)
- * 6. IDE configuration (.vscode/, .idea/)
- * 7. Test coverage reports
- * 8. Miscellaneous temporary files
- */
+
 
 # Dependencies
 node_modules/
