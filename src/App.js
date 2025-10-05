@@ -235,6 +235,7 @@ export default function ReservationDashboard() {
         </div>
       )}
 
+      {/* ==================== VOICE RESERVATION BANNER ==================== */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-center gap-3 text-sm sm:text-base">
@@ -252,6 +253,7 @@ export default function ReservationDashboard() {
         </div>
       </div>
 
+      {/* ==================== HEADER SECTION ==================== */}
       <header
         className="bg-white shadow-sm border-b border-slate-200"
         style={{ marginTop: error || !isOnline ? "48px" : "0" }}
@@ -522,6 +524,11 @@ function StatCard({ title, value, icon, color }) {
   );
 }
 
+/**
+ * ============================================================================
+ * RESERVATION CARD COMPONENT
+ * ============================================================================
+ */
 function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
   const statusColors = {
     confirmed: "bg-green-100 text-green-800",
@@ -554,6 +561,7 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
               <Users className="h-4 w-4 text-slate-400" />
               <span>{reservation.partySize} guests</span>
             </div>
+
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <span>
@@ -621,12 +629,32 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
   );
 }
 
+/**
+ * ============================================================================
+ * RESERVATION FORM COMPONENT
+ * ============================================================================
+ *
+ * DATE FORMAT FIX: Uses type="date" which provides MM/DD/YYYY input format
+ * The date is correctly converted to YYYY-MM-DD for database storage
+ */
 function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
+  // Convert database date (YYYY-MM-DD) to input format for editing
   const getInitialDate = () => {
-    if (!reservation?.date) return null;
-    return reservation.date instanceof Date
-      ? reservation.date
-      : new Date(reservation.date);
+    if (!reservation?.date) return "";
+
+    // Handle both Date objects and ISO strings
+    const dateObj =
+      reservation.date instanceof Date
+        ? reservation.date
+        : new Date(reservation.date);
+
+    // Get year, month, day in local timezone
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+
+    // Return in YYYY-MM-DD format for date input
+    return `${year}-${month}-${day}`;
   };
 
   const [formData, setFormData] = useState({
@@ -800,6 +828,7 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             Click to select date from calendar (MM/DD/YYYY)
           </p>
         </div>
+
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Time * <span className="text-slate-500">(Pacific Time)</span>
