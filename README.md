@@ -1,622 +1,322 @@
-# Chaat Corner Restaurant - Frontend Dashboard
+# 🍽️ Chaat Corner Restaurant - Reservation Management System
 
-Beautiful, modern, and responsive reservation management dashboard built with React and Tailwind CSS for restaurant staff to manage bookings efficiently.
+A complete, production-ready restaurant reservation system with voice AI integration, Google Calendar sync, and modern web interface.
 
----
-
-## 🚀 Features
-
-- **📊 Dashboard View** - Today's reservations at a glance with real-time statistics
-- **📋 All Reservations** - Complete reservation list with advanced filtering
-- **➕ Create Reservations** - Easy-to-use form with validation
-- **✏️ Edit Reservations** - Modify existing bookings seamlessly
-- **❌ Cancel Reservations** - Cancel with confirmation dialog
-- **🔍 Search & Filter** - Find reservations by name, phone, ID, date, or status
-- **📱 Responsive Design** - Works perfectly on desktop, tablet, and mobile
-- **🎨 Beautiful UI** - Modern design with Tailwind CSS and gradient accents
-- **⚡ Real-time Updates** - Instant synchronization with backend API
-- **🎯 Smart Special Requests** - Predefined options plus custom requests
+![System Status](https://img.shields.io/badge/status-production--ready-brightgreen)
+![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
 
-## 📋 Prerequisites
+## 🌟 Features
 
-Before running this application, ensure you have:
+### For Restaurant Staff
+- 📊 **Real-time Dashboard** - Today's reservations at a glance
+- 📅 **Reservation Management** - Create, edit, cancel with ease
+- 🔍 **Advanced Search** - Filter by date, status, customer
+- 📱 **Responsive Design** - Works on desktop, tablet, mobile
+- 🎨 **Beautiful UI** - Modern design with Tailwind CSS
 
-- **Node.js** 18+ installed
-- **npm** or **yarn** package manager
-- **Backend API** running on `http://localhost:3001`
+### For Customers
+- 🎙️ **Voice Reservations** - Call to book via AI phone agent (optional)
+- 📧 **Calendar Integration** - Automatic Google Calendar events
+- ✉️ **Confirmations** - Instant reservation confirmations
 
----
-
-## 🛠️ Installation
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd restaurant-frontend
-
-# Install dependencies
-npm install
-
-# Or with yarn
-yarn install
-```
+### Technical Features
+- 🔐 **API Authentication** - Secure with API key protection
+- 🚦 **Rate Limiting** - Prevent abuse (100 req/15min)
+- 🗄️ **MongoDB Database** - Scalable document storage
+- 📊 **Structured Logging** - Professional debugging
+- 🏥 **Health Monitoring** - Built-in health check endpoint
+- 🌐 **Production Ready** - Deploy to Render + Vercel (free tier!)
 
 ---
+### Technology Stack
 
-## ⚙️ Configuration
+**Frontend:**
+- React 19 - UI library
+- Tailwind CSS - Styling
+- Lucide React - Icons
+- Fetch API - HTTP requests
 
-### Backend API URL
-
-Update the API URL in `src/App.js` if your backend is running on a different port:
-
-```javascript
-const API_URL = "http://localhost:3001"; // Change to your backend URL
-```
-
-### Environment Variables (Optional)
-
-Create a `.env` file in the root directory:
-
-```env
-REACT_APP_API_URL=http://localhost:3001
-```
-
-Then update `src/App.js`:
-```javascript
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
-```
-
----
-
-## 🏃 Running the Application
-
-### Development Mode
-```bash
-npm start
-
-# Or with yarn
-yarn start
-```
-
-The app will automatically open at `http://localhost:3000`
-
-**Features in Development Mode:**
-- Hot module replacement (auto-refresh on save)
-- Error overlay in browser
-- React DevTools support
-- Source maps for debugging
-
-### Production Build
-```bash
-# Create optimized production build
-npm run build
-
-# Or with yarn
-yarn build
-```
-
-**Build output:**
-- Optimized bundle in `build/` directory
-- Minified JavaScript and CSS
-- Asset optimization and compression
-- Ready for deployment
-
-### Serve Production Build Locally
-```bash
-# Install serve globally
-npm install -g serve
-
-# Serve the build folder
-serve -s build -l 3000
-```
+**Hosting (Free Tier):**
+- Vercel - Frontend hosting
+- MongoDB Atlas - Database hosting
 
 ---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── App.js                  # Main application component
-│   ├── ReservationDashboard    # Main container
-│   ├── StatCard                # Statistics display
-│   ├── ReservationCard         # Individual reservation
-│   ├── ReservationForm         # Create/edit form
-│   └── Modal                   # Modal wrapper
-├── App.test.js             # Component tests
-├── index.js                # Application entry point
-├── index.css               # Global styles with Tailwind
-├── reportWebVitals.js      # Performance monitoring
-└── setupTests.js           # Test configuration
-
-public/
-├── index.html              # HTML template
-├── favicon.ico             # Favicon
-├── manifest.json           # PWA manifest
-└── robots.txt              # SEO robots file
-
-Configuration Files:
-├── package.json            # Dependencies and scripts
-├── tailwind.config.js      # Tailwind CSS configuration
-├── postcss.config.js       # PostCSS configuration
-└── .gitignore              # Git ignore rules
+chaat-corner-reservation/
+├── restaurant-backend/          # NestJS API backend
+│   ├── src/
+│   │   ├── auth/               # Authentication guard
+│   │   ├── calendar/           # Google Calendar integration
+│   │   ├── reservation/        # Reservation management
+│   │   ├── retell/            # Voice AI integration
+│   │   └── utils/             # Logging utilities
+│   ├── .env.example           # Environment template
+│   ├── QUICK_SETUP.md         # 10-minute setup guide
+│   └── README.md              # Backend documentation
+│
+├── restaurant-frontend/         # React web interface
+│   ├── src/
+│   │   ├── services/          # API service layer
+│   │   ├── config.js          # Environment configuration
+│   │   └── App.js             # Main application
+│   ├── .env.local.example     # Environment template
+│   └── README.md              # Frontend documentation
+│
+├── QUICK_SETUP.md              # Quick local setup guide
+├── DEPLOYMENT.md               # Production deployment guide
+└── README.md                   # This file
 ```
 
 ---
 
-## 🎨 Components
+## 🚀 Quick Start
 
-### Main Components
+### Prerequisites
+- Node.js 18+ ([download](https://nodejs.org))
+- npm 9+
+- MongoDB Atlas account (free tier)
 
-#### **ReservationDashboard**
-Main application container that manages all state and API interactions.
+### Option 1: Follow the Quick Setup Guide (Recommended)
 
-**State Management:**
-- Reservations data
-- Today's reservations
-- Dashboard statistics
-- UI state (modals, loading, filters)
+**👉 [QUICK_SETUP.md](./restaurant-backend/QUICK_SETUP.md)** - Complete setup in 10 minutes!
 
-**Key Functions:**
-- `fetchStats()` - Get dashboard statistics
-- `fetchTodayReservations()` - Get today's bookings
-- `fetchAllReservations()` - Get all reservations with filters
-- `handleCreateReservation()` - Create new booking
-- `handleUpdateReservation()` - Update existing booking
-- `handleCancelReservation()` - Cancel booking
+### Option 2: Manual Setup
 
-#### **StatCard**
-Displays individual statistics with icons.
+#### 1. Clone Repository
+```bash
+git clone <repository-url>
+cd chaat-corner-reservation
+```
 
-**Props:**
-- `title` - Statistic title
-- `value` - Numeric value
-- `icon` - Icon component
-- `color` - Theme color (blue, green, red)
+#### 2. Setup Backend
+```bash
+cd restaurant-backend
+npm install
+cp .env.example .env
+# Edit .env with your MongoDB URI and API key
+npm run start:dev
+```
 
-#### **ReservationCard**
-Shows detailed reservation information.
+#### 3. Setup Frontend (new terminal)
+```bash
+cd restaurant-frontend
+npm install
+cp .env.local.example .env.local
+# Edit .env.local with backend URL and API key
+npm start
+```
 
-**Props:**
-- `reservation` - Reservation object
-- `onEdit` - Edit callback
-- `onCancel` - Cancel callback
-
-**Displays:**
-- Customer name and status badge
-- Phone number and party size
-- Reservation time and table number
-- Special requests (if any)
-- Reservation ID
-
-#### **ReservationForm**
-Form for creating or editing reservations.
-
-**Props:**
-- `reservation` - Existing reservation (for edit mode)
-- `onSubmit` - Submit callback
-- `onCancel` - Cancel callback
-
-**Features:**
-- Input validation
-- Date picker (prevents past dates)
-- Time slot dropdown
-- Party size selector (1-12 guests)
-- Special requests buttons
-- Custom request input
-
-**Predefined Special Requests:**
-- Window seat
-- High chair
-- Birthday celebration
-- Anniversary
-- Vegetarian options
-- Gluten-free options
-- Wheelchair accessible
-- Quiet area
-- Outdoor seating
-
-#### **Modal**
-Reusable modal wrapper component.
-
-**Props:**
-- `children` - Modal content
-- `onClose` - Close callback
-- `title` - Modal title
-
-**Features:**
-- Semi-transparent backdrop
-- Sticky header when scrolling
-- Close button
-- Max height (90vh) with scroll
+#### 4. Open Browser
+Navigate to http://localhost:3000
 
 ---
 
-## 🔌 API Integration
+## 📖 Documentation
 
-The frontend communicates with the backend via REST API:
+### Setup & Configuration
+- **[Quick Setup Guide](./restaurant-backend/QUICK_SETUP.md)** - Get started in 10 minutes
+- **[Backend README](./restaurant-backend/README.md)** - Detailed backend documentation
+- **[Frontend README](./restaurant-frontend/README.md)** - Frontend documentation
+- **[Deployment Guide](./DEPLOYMENT.md)** - Production deployment instructions
 
-### Endpoints Used
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/reservations/stats` | Dashboard statistics |
-| GET | `/reservations/today` | Today's reservations |
-| GET | `/reservations` | All reservations (with filters) |
-| GET | `/reservations/:id` | Single reservation |
-| POST | `/reservations` | Create reservation |
-| PATCH | `/reservations/:id` | Update reservation |
-| DELETE | `/reservations/:id` | Cancel reservation |
-
-### Request/Response Examples
-
-#### Create Reservation
-```javascript
-// Request
-POST http://localhost:3001/reservations
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "phone": "+15551234567",
-  "email": "john@example.com",
-  "partySize": 4,
-  "date": "2024-12-25",
-  "time": "7:00 PM",
-  "specialRequests": ["Window seat"]
-}
-
-// Response
-{
-  "_id": "abc123...",
-  "name": "John Doe",
-  "phone": "+15551234567",
-  "email": "john@example.com",
-  "partySize": 4,
-  "date": "2024-12-25T00:00:00.000Z",
-  "time": "7:00 PM",
-  "tableNumber": 5,
-  "specialRequests": ["Window seat"],
-  "status": "confirmed",
-  "reservationId": "RES-1234567890-ABC123",
-  "createdAt": "2024-01-15T10:30:00.000Z",
-  "updatedAt": "2024-01-15T10:30:00.000Z"
-}
-```
-
-#### Get Statistics
-```javascript
-// Request
-GET http://localhost:3001/reservations/stats
-
-// Response
-{
-  "todayReservations": 12,
-  "totalReservations": 150,
-  "cancelledToday": 2
-}
-```
+### Environment Variables
+- **[Backend .env Example](./restaurant-backend/.env.example)** - Backend configuration
+- **[Frontend .env Example](./restaurant-frontend/.env.local.example)** - Frontend configuration
 
 ---
 
-## 🎨 Styling with Tailwind CSS
+## 🏗️ Architecture
 
-### Tailwind Configuration
-
-The app uses Tailwind CSS utility classes exclusively. Configuration in `tailwind.config.js`:
-
-```javascript
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {
-      // Custom theme extensions here
-    },
-  },
-  plugins: [],
-};
+```
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│   Browser   │────────▶│   Frontend   │────────▶│   Backend   │
+│  (React)    │  HTTPS  │   (Vercel)   │   API   │  (Render)   │
+└─────────────┘         └──────────────┘         └─────────────┘
+                                                        │
+                                                        ▼
+                                              ┌──────────────────┐
+                                              │  MongoDB Atlas   │
+                                              │   (Database)     │
+                                              └──────────────────┘
+                                                        │
+                        ┌───────────────────────────────┼────────────────┐
+                        ▼                               ▼                ▼
+                ┌──────────────┐              ┌──────────────┐  ┌──────────────┐
+                │   Google     │              │  Retell AI   │  │  UptimeRobot │
+                │   Calendar   │              │   (Voice)    │  │ (Monitoring) │
+                └──────────────┘              └──────────────┘  └──────────────┘
 ```
 
-### Key Design Elements
+### Technology Stack
 
-**Color Palette:**
-- Primary: Amber/Orange gradient (`from-amber-500 to-orange-500`)
-- Success: Green (`green-500`)
-- Error: Red (`red-500`)
-- Info: Blue (`blue-500`)
-- Background: Slate gradients
+**Backend:**
+- NestJS - Node.js framework
+- MongoDB - NoSQL database
+- Mongoose - ODM for MongoDB
+- Google Calendar API - Calendar integration
+- Retell AI - Voice reservations (optional)
+- Helmet - Security headers
+- Express Rate Limit - API protection
 
-**Typography:**
-- Headers: Bold, large sizes (text-3xl, text-2xl)
-- Body: Medium weight (font-medium)
-- Labels: Small, uppercase for emphasis
+**Frontend:**
+- React 19 - UI library
+- Tailwind CSS - Styling
+- Lucide React - Icons
+- Fetch API - HTTP requests
 
-**Spacing:**
-- Consistent padding (p-4, p-6)
-- Grid gaps (gap-4, gap-6)
-- Margin utilities (mt-4, mb-2)
-
-**Shadows & Borders:**
-- Cards: `shadow-lg` with `border border-slate-200`
-- Buttons: `shadow-lg hover:shadow-xl`
-- Rounded corners: `rounded-lg`, `rounded-xl`
+**Hosting (Free Tier):**
+- Render.com - Backend hosting
+- Vercel - Frontend hosting
+- MongoDB Atlas - Database hosting
 
 ---
 
-## 📱 Responsive Design
+## 🔐 Security Features
 
-The dashboard is fully responsive across all devices:
+### Authentication
+- ✅ API key authentication on all endpoints
+- ✅ Separate keys for development and production
+- ✅ Environment variable configuration
 
-### Breakpoints
-- **Mobile:** < 768px (1 column layout)
-- **Tablet:** 768px - 1024px (2 column layout)
-- **Desktop:** > 1024px (3 column layout)
+### Protection
+- ✅ Rate limiting (100 requests per 15 minutes)
+- ✅ Helmet security headers (XSS, clickjacking protection)
+- ✅ CORS configuration (whitelist allowed origins)
+- ✅ Input validation on all endpoints
 
-### Responsive Features
-```javascript
-// Statistics cards
-className="grid grid-cols-1 md:grid-cols-3 gap-6"
-
-// Reservation info
-className="grid grid-cols-2 md:grid-cols-4 gap-4"
-
-// Filters
-className="grid grid-cols-1 md:grid-cols-3 gap-4"
-```
+### Best Practices
+- ✅ No sensitive data in git repository
+- ✅ Separate development and production configs
+- ✅ Structured logging for audit trails
+- ✅ Health check endpoint for monitoring
 
 ---
 
 ## 🧪 Testing
 
-### Run Tests
-```bash
-npm test
+### Local Testing
 
-# Or with yarn
-yarn test
+**Backend:**
+```bash
+cd restaurant-backend
+
+# Test health check (no auth)
+curl http://localhost:3001/health
+
+# Test authenticated endpoint
+curl -H "X-API-Key: your-api-key" \
+  http://localhost:3001/reservations/stats
 ```
 
-### Test Coverage
+**Frontend:**
+1. Open http://localhost:3000
+2. Create test reservation
+3. Verify in dashboard
+4. Check MongoDB Atlas for data
+
+### Production Testing
+
+After deployment:
 ```bash
-npm test -- --coverage
-```
+# Test backend health
+curl https://your-backend.onrender.com/health
 
-### Example Test
-```javascript
-import { render, screen } from "@testing-library/react";
-import App from "./App";
-
-test("renders restaurant name", () => {
-  render(<App />);
-  const linkElement = screen.getByText(/Chaat Corner/i);
-  expect(linkElement).toBeInTheDocument();
-});
-```
-
----
-
-## 🔧 Available Scripts
-
-| Script | Command | Description |
-|--------|---------|-------------|
-| Start | `npm start` | Run development server |
-| Build | `npm run build` | Create production build |
-| Test | `npm test` | Run test suite |
-| Eject | `npm run eject` | Eject from Create React App ⚠️ |
-
-**⚠️ Warning:** Ejecting is a one-way operation and cannot be undone!
-
----
-
-## 🌐 Browser Support
-
-Supports all modern browsers:
-
-| Browser | Version |
-|---------|---------|
-| Chrome | Latest |
-| Firefox | Latest |
-| Safari | Latest |
-| Edge | Latest |
-| Mobile Safari | iOS 12+ |
-| Chrome Mobile | Latest |
-
-**Note:** Internet Explorer is not supported.
-
----
-
-## 🔍 Troubleshooting
-
-### Styles Not Loading
-
-**Problem:** Tailwind classes not applying
-
-**Solutions:**
-1. Verify `src/index.css` contains Tailwind directives:
-   ```css
-   @tailwind base;
-   @tailwind components;
-   @tailwind utilities;
-   ```
-2. Check `tailwind.config.js` content array includes your files
-3. Restart development server: `npm start`
-4. Clear browser cache and hard reload (Cmd/Ctrl + Shift + R)
-
-### API Connection Errors
-
-**Problem:** Cannot connect to backend
-
-**Solutions:**
-1. Verify backend is running: `http://localhost:3001`
-2. Check `API_URL` in `src/App.js` matches backend port
-3. Ensure CORS is enabled on backend
-4. Check browser console for specific errors
-5. Verify network tab in DevTools shows correct requests
-
-### Build Errors
-
-**Problem:** Build fails or shows errors
-
-**Solutions:**
-```bash
-# Clear node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-
-# Clear build cache
-rm -rf build
-npm run build
-
-# Check for dependency conflicts
-npm ls
-```
-
-### Port Already in Use
-
-**Problem:** Port 3000 already in use
-
-**Solutions:**
-```bash
-# Option 1: Kill process on port 3000
-# macOS/Linux
-lsof -ti:3000 | xargs kill -9
-
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-
-# Option 2: Use different port
-PORT=3001 npm start
+# Test frontend
+open https://your-frontend.vercel.app
 ```
 
 ---
 
 ## 🚀 Deployment
 
-### Build for Production
-```bash
-npm run build
-```
+### Quick Deployment (Free Tier)
 
-### Deploy to Various Platforms
+**👉 [DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide
 
-#### **Vercel**
-```bash
-# Install Vercel CLI
-npm i -g vercel
+**Summary:**
+1. Deploy backend to Render.com (free tier)
+2. Deploy frontend to Vercel (free tier)
+3. Use MongoDB Atlas (free tier)
+4. Update environment variables
+5. Test production deployment
 
-# Deploy
-vercel
-```
+**Total Cost:** $0/month (free tier)
 
-#### **Netlify**
-```bash
-# Install Netlify CLI
-npm i -g netlify-cli
+### Production Checklist
 
-# Deploy
-netlify deploy --prod --dir=build
-```
-
-#### **GitHub Pages**
-```bash
-# Install gh-pages
-npm install --save-dev gh-pages
-
-# Add to package.json
-"homepage": "https://yourusername.github.io/restaurant-frontend",
-"scripts": {
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
-}
-
-# Deploy
-npm run deploy
-```
-
-#### **AWS S3 + CloudFront**
-```bash
-# Build
-npm run build
-
-# Upload to S3 bucket
-aws s3 sync build/ s3://your-bucket-name
-
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id YOUR_DIST_ID --paths "/*"
-```
-
-### Environment Variables for Production
-
-Update your production environment with:
-```env
-REACT_APP_API_URL=https://api.yourrestaurant.com
-```
+- [ ] MongoDB Atlas cluster created
+- [ ] API key generated (32+ characters)
+- [ ] Backend deployed to Render
+- [ ] Frontend deployed to Vercel
+- [ ] Environment variables configured
+- [ ] CORS settings updated
+- [ ] Google Calendar configured (optional)
+- [ ] Retell AI webhook updated (optional)
+- [ ] Health check endpoint working
+- [ ] Test reservation creation
+- [ ] Monitoring setup (UptimeRobot)
 
 ---
 
-## 📦 Dependencies
+## 📊 API Endpoints
 
-### Production Dependencies
-- `react` (^19.2.0) - Core React library
-- `react-dom` (^19.2.0) - React DOM rendering
-- `lucide-react` (^0.544.0) - Icon library
-- `web-vitals` (^2.1.4) - Performance metrics
+### Public Endpoints (No Authentication)
+- `GET /` - API information
+- `GET /health` - Health check
 
-### Development Dependencies
-- `react-scripts` (5.0.1) - Create React App scripts
-- `tailwindcss` (^3.4.18) - Utility-first CSS
-- `autoprefixer` (^10.4.21) - CSS vendor prefixes
-- `postcss` (^8.5.6) - CSS transformations
-- `@testing-library/react` (^16.3.0) - React testing utilities
-- `@testing-library/jest-dom` (^6.9.1) - Jest matchers
+### Protected Endpoints (Require X-API-Key header)
+- `GET /reservations` - List all reservations
+- `GET /reservations/today` - Today's reservations
+- `GET /reservations/stats` - Dashboard statistics
+- `GET /reservations/:id` - Get single reservation
+- `POST /reservations` - Create reservation
+- `PATCH /reservations/:id` - Update reservation
+- `DELETE /reservations/:id` - Cancel reservation
+- `GET /reservations/check-availability` - Check table availability
 
----
+### Webhook Endpoints
+- `POST /retell/webhook` - Retell AI voice agent webhook
 
-## 🎯 Performance Optimization
-
-### Built-in Optimizations
-- Code splitting with React.lazy (if needed)
-- Production build minification
-- Asset optimization and compression
-- Tree shaking to remove unused code
-
-### Web Vitals Monitoring
-```javascript
-// In src/index.js
-import reportWebVitals from './reportWebVitals';
-
-reportWebVitals(console.log); // Log to console
-// or
-reportWebVitals(sendToAnalytics); // Send to analytics service
-```
-
-### Performance Tips
-1. Use React DevTools Profiler
-2. Implement pagination for large reservation lists
-3. Add debounce to search input
-4. Use React.memo for expensive components
-5. Lazy load images and components
+**Full API documentation:** See [Backend README](./restaurant-backend/README.md)
 
 ---
 
-### Code Style Guidelines
-- Use functional components with hooks
-- Follow Tailwind utility-first approach
-- Add comprehensive comments
-- Use meaningful variable names
-- Keep components focused and small
+## 🎙️ Voice Integration (Optional)
+
+Enable phone reservations with Retell AI:
+
+1. Sign up at https://retell.ai
+2. Create voice agent
+3. Configure webhook: `https://your-backend.onrender.com/retell/webhook`
+4. Add credentials to backend environment variables
+5. Test by calling your Retell phone number
+
+**Features:**
+- Natural conversation flow
+- Collects all reservation details
+- Automatic data extraction from transcript
+- 3-layer fallback system for reliability
+- Handles various speech patterns
 
 ---
 
-## 🎓 Learn More
+## 📅 Google Calendar Integration (Optional)
 
-- [React Documentation](https://react.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Create React App](https://create-react-app.dev)
-- [Lucide Icons](https://lucide.dev)
+Sync reservations with Google Calendar:
 
----
+1. Create Google Cloud project
+2. Enable Google Calendar API
+3. Create service account
+4. Download credentials JSON
+5. Share calendar with service account email
+6. Add credentials to backend environment variables
 
-Built with ❤️ using React and Tailwind CSS
+**Features:**
+- Automatic event creation
+- 2-hour reservation blocks
