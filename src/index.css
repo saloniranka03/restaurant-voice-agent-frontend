@@ -10,6 +10,10 @@
  * Tailwind processes this file and generates utility classes
  */
 
+/* Import React DatePicker styles */
+@import "react-datepicker/dist/react-datepicker.css";
+@import "./datepicker-custom.css";
+
 /* Import Tailwind CSS layers */
 @tailwind base;
 @tailwind components;

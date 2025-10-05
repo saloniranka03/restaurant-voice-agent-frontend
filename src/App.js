@@ -3,27 +3,21 @@
  * MAIN APPLICATION COMPONENT - RESTAURANT RESERVATION DASHBOARD
  * ============================================================================
  *
- * FEATURES:
- * ---------
- * ✅ Real-time Dashboard - Today's reservations at a glance
- * ✅ Voice Reservation Banner - Call to make reservations by phone
- * ✅ Reservation Management - Create, edit, cancel with ease
- * ✅ Advanced Search - Filter by date, status, customer name
- * ✅ Responsive Design using Tailwind CSS
- * ✅ API Authentication - Secure with API key protection
- * ✅ Error Handling - User-friendly error messages
- * ✅ Network Detection - Offline indicator and reconnection
- * ✅ Date Format Fix - MM/DD/YYYY input with correct database storage
+ * COMPLETE FILE - All 5 components included
  *
- * TIMEZONE HANDLING:
- * ------------------
- * All times are displayed and interpreted in Pacific Time (PT).
- * Backend handles timezone conversion to ensure consistency.
+ * Components:
+ * 1. ReservationDashboard (Main)
+ * 2. StatCard
+ * 3. ReservationCard
+ * 4. ReservationForm (with React DatePicker)
+ * 5. Modal
  *
  * @module App
  */
 
 import React, { useState, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Calendar,
   Phone,
@@ -42,13 +36,7 @@ import {
 import { api, ApiError, withRetry } from "./services/api";
 import config from "./config";
 
-/**
- * ============================================================================
- * MAIN DASHBOARD COMPONENT
- * ============================================================================
- */
 export default function ReservationDashboard() {
-  // ==================== STATE MANAGEMENT ====================
   const [reservations, setReservations] = useState([]);
   const [todayReservations, setTodayReservations] = useState([]);
   const [stats, setStats] = useState({
@@ -56,49 +44,38 @@ export default function ReservationDashboard() {
     totalReservations: 0,
     cancelledToday: 0,
   });
-
   const [activeTab, setActiveTab] = useState("dashboard");
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDate, setFilterDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
   const [error, setError] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  // ==================== NETWORK STATUS DETECTION ====================
   useEffect(() => {
     const handleOnline = () => {
-      console.log("✅ Connection restored");
       setIsOnline(true);
       setError(null);
       fetchStats();
       fetchTodayReservations();
     };
-
     const handleOffline = () => {
-      console.log("❌ Connection lost");
       setIsOnline(false);
       setError("No internet connection. Please check your network.");
     };
-
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
-  // ==================== LIFECYCLE HOOKS ====================
   useEffect(() => {
     if (isOnline) {
-      console.log("📊 Fetching initial data...");
       fetchStats();
       fetchTodayReservations();
       if (activeTab === "all") {
@@ -107,17 +84,13 @@ export default function ReservationDashboard() {
     }
   }, [activeTab, isOnline]);
 
-  // ==================== ERROR HANDLING HELPER ====================
   const handleApiError = (error, defaultMessage = "An error occurred") => {
     let errorMessage = defaultMessage;
-
     if (error instanceof ApiError) {
       errorMessage = error.message;
-
       if (error.status === 401) {
         errorMessage =
           "Authentication failed. Please check your API key configuration.";
-        console.error("❌ Auth error - API key may be incorrect or missing");
       } else if (error.status === 404) {
         errorMessage = "Resource not found.";
       } else if (error.status === 429) {
@@ -128,24 +101,17 @@ export default function ReservationDashboard() {
     } else if (!navigator.onLine) {
       errorMessage = "No internet connection. Please check your network.";
     }
-
     setError(errorMessage);
-    console.error("Error:", errorMessage, error);
     setTimeout(() => setError(null), 5000);
-
     return errorMessage;
   };
 
-  // ==================== API FUNCTIONS ====================
   const fetchStats = async () => {
     try {
       setError(null);
-      console.log("📊 Fetching statistics...");
       const data = await withRetry(() => api.get("/reservations/stats"));
       setStats(data);
-      console.log("✅ Statistics loaded:", data);
     } catch (error) {
-      console.error("❌ Error fetching stats:", error);
       handleApiError(error, "Failed to fetch statistics");
     }
   };
@@ -153,12 +119,9 @@ export default function ReservationDashboard() {
   const fetchTodayReservations = async () => {
     try {
       setError(null);
-      console.log("📅 Fetching today's reservations...");
       const data = await withRetry(() => api.get("/reservations/today"));
       setTodayReservations(data);
-      console.log(`✅ Loaded ${data.length} reservations for today`);
     } catch (error) {
-      console.error("❌ Error fetching today's reservations:", error);
       handleApiError(error, "Failed to fetch today's reservations");
     }
   };
@@ -167,23 +130,12 @@ export default function ReservationDashboard() {
     setLoading(true);
     try {
       setError(null);
-      console.log("📋 Fetching all reservations...");
-
       let url = "/reservations?";
-      if (filterStatus) {
-        url += `status=${filterStatus}&`;
-        console.log(`  Filter: status=${filterStatus}`);
-      }
-      if (filterDate) {
-        url += `date=${filterDate}`;
-        console.log(`  Filter: date=${filterDate}`);
-      }
-
+      if (filterStatus) url += `status=${filterStatus}&`;
+      if (filterDate) url += `date=${filterDate}`;
       const data = await api.get(url);
       setReservations(data);
-      console.log(`✅ Loaded ${data.length} reservations`);
     } catch (error) {
-      console.error("❌ Error fetching reservations:", error);
       handleApiError(error, "Failed to fetch reservations");
     } finally {
       setLoading(false);
@@ -193,20 +145,13 @@ export default function ReservationDashboard() {
   const handleCreateReservation = async (formData) => {
     try {
       setError(null);
-      console.log("➕ Creating reservation:", formData);
-
       await api.post("/reservations", formData);
-
-      console.log("✅ Reservation created successfully");
       setShowCreateModal(false);
-
       fetchStats();
       fetchTodayReservations();
       if (activeTab === "all") fetchAllReservations();
-
       alert("✅ Reservation created successfully!");
     } catch (error) {
-      console.error("❌ Error creating reservation:", error);
       const errorMsg = handleApiError(error, "Failed to create reservation");
       alert(`❌ Error: ${errorMsg}`);
     }
@@ -215,53 +160,35 @@ export default function ReservationDashboard() {
   const handleUpdateReservation = async (id, formData) => {
     try {
       setError(null);
-      console.log(`✏️ Updating reservation ${id}:`, formData);
-
       await api.patch(`/reservations/${id}`, formData);
-
-      console.log("✅ Reservation updated successfully");
       setShowEditModal(false);
       setSelectedReservation(null);
-
       fetchStats();
       fetchTodayReservations();
       if (activeTab === "all") fetchAllReservations();
-
       alert("✅ Reservation updated successfully!");
     } catch (error) {
-      console.error("❌ Error updating reservation:", error);
       const errorMsg = handleApiError(error, "Failed to update reservation");
       alert(`❌ Error: ${errorMsg}`);
     }
   };
 
   const handleCancelReservation = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this reservation?")) {
-      console.log("ℹ️ Cancellation aborted by user");
+    if (!window.confirm("Are you sure you want to cancel this reservation?"))
       return;
-    }
-
     try {
       setError(null);
-      console.log(`🗑️ Cancelling reservation ${id}...`);
-
       await api.delete(`/reservations/${id}`);
-
-      console.log("✅ Reservation cancelled successfully");
-
       fetchStats();
       fetchTodayReservations();
       if (activeTab === "all") fetchAllReservations();
-
       alert("✅ Reservation cancelled successfully!");
     } catch (error) {
-      console.error("❌ Error cancelling reservation:", error);
       const errorMsg = handleApiError(error, "Failed to cancel reservation");
       alert(`❌ Error: ${errorMsg}`);
     }
   };
 
-  // ==================== UTILITY FUNCTIONS ====================
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
       weekday: "short",
@@ -278,10 +205,8 @@ export default function ReservationDashboard() {
       res.reservationId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ==================== RENDER ====================
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* ==================== ERROR BANNER ==================== */}
       {error && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-red-500 text-white px-4 py-3 shadow-lg">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -292,7 +217,6 @@ export default function ReservationDashboard() {
             <button
               onClick={() => setError(null)}
               className="text-white hover:text-red-100"
-              aria-label="Dismiss error"
             >
               ✕
             </button>
@@ -300,7 +224,6 @@ export default function ReservationDashboard() {
         </div>
       )}
 
-      {/* ==================== OFFLINE BANNER ==================== */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-yellow-500 text-white px-4 py-3 shadow-lg">
           <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
@@ -348,14 +271,8 @@ export default function ReservationDashboard() {
                 <p className="text-sm text-slate-600">
                   Reservation Management System
                 </p>
-                {config.isDevelopment && (
-                  <p className="text-xs text-amber-600 mt-1">
-                    {config.API_KEY ? "🔒 Authenticated" : "⚠️ No API Key"}
-                  </p>
-                )}
               </div>
             </div>
-
             <button
               onClick={() => setShowCreateModal(true)}
               disabled={!isOnline}
@@ -372,34 +289,27 @@ export default function ReservationDashboard() {
         </div>
       </header>
 
-      {/* ==================== TAB NAVIGATION ==================== */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
             {["dashboard", "all"].map((tab) => (
               <button
                 key={tab}
-                onClick={() => {
-                  console.log(`📑 Switching to ${tab} tab`);
-                  setActiveTab(tab);
-                }}
+                onClick={() => setActiveTab(tab)}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab
                     ? "border-amber-500 text-amber-600"
                     : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
                 }`}
               >
-                {tab === "dashboard" && "Dashboard"}
-                {tab === "all" && "All Reservations"}
+                {tab === "dashboard" ? "Dashboard" : "All Reservations"}
               </button>
             ))}
           </nav>
         </div>
       </div>
 
-      {/* ==================== MAIN CONTENT AREA ==================== */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ==================== DASHBOARD TAB ==================== */}
         {activeTab === "dashboard" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -422,7 +332,6 @@ export default function ReservationDashboard() {
                 color="red"
               />
             </div>
-
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -444,9 +353,6 @@ export default function ReservationDashboard() {
                       key={reservation._id}
                       reservation={reservation}
                       onEdit={() => {
-                        console.log(
-                          `✏️ Editing reservation: ${reservation.reservationId}`
-                        );
                         setSelectedReservation(reservation);
                         setShowEditModal(true);
                       }}
@@ -460,7 +366,6 @@ export default function ReservationDashboard() {
           </div>
         )}
 
-        {/* ==================== ALL RESERVATIONS TAB ==================== */}
         {activeTab === "all" && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
@@ -480,7 +385,6 @@ export default function ReservationDashboard() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Date
@@ -492,7 +396,6 @@ export default function ReservationDashboard() {
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Status
@@ -509,12 +412,8 @@ export default function ReservationDashboard() {
                   </select>
                 </div>
               </div>
-
               <button
-                onClick={() => {
-                  console.log("🔍 Applying filters...");
-                  fetchAllReservations();
-                }}
+                onClick={fetchAllReservations}
                 disabled={!isOnline}
                 className={`mt-4 w-full md:w-auto px-6 py-2 rounded-lg transition-colors ${
                   isOnline
@@ -525,7 +424,6 @@ export default function ReservationDashboard() {
                 Apply Filters
               </button>
             </div>
-
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -549,9 +447,6 @@ export default function ReservationDashboard() {
                       key={reservation._id}
                       reservation={reservation}
                       onEdit={() => {
-                        console.log(
-                          `✏️ Editing reservation: ${reservation.reservationId}`
-                        );
                         setSelectedReservation(reservation);
                         setShowEditModal(true);
                       }}
@@ -566,13 +461,9 @@ export default function ReservationDashboard() {
         )}
       </main>
 
-      {/* ==================== MODALS ==================== */}
       {showCreateModal && (
         <Modal
-          onClose={() => {
-            console.log("ℹ️ Closing create modal");
-            setShowCreateModal(false);
-          }}
+          onClose={() => setShowCreateModal(false)}
           title="Create New Reservation"
         >
           <ReservationForm
@@ -586,7 +477,6 @@ export default function ReservationDashboard() {
       {showEditModal && selectedReservation && (
         <Modal
           onClose={() => {
-            console.log("ℹ️ Closing edit modal");
             setShowEditModal(false);
             setSelectedReservation(null);
           }}
@@ -609,18 +499,12 @@ export default function ReservationDashboard() {
   );
 }
 
-/**
- * ============================================================================
- * STAT CARD COMPONENT
- * ============================================================================
- */
 function StatCard({ title, value, icon, color }) {
   const colorClasses = {
     blue: "from-blue-500 to-blue-600",
     green: "from-green-500 to-green-600",
     red: "from-red-500 to-red-600",
   };
-
   return (
     <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
       <div className="p-6">
@@ -652,7 +536,6 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
     completed: "bg-blue-100 text-blue-800",
     "no-show": "bg-gray-100 text-gray-800",
   };
-
   return (
     <div className="px-6 py-4 hover:bg-slate-50 transition-colors">
       <div className="flex items-start justify-between">
@@ -669,13 +552,11 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
               {reservation.status}
             </span>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-600">
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-slate-400" />
               <span>{reservation.phone}</span>
             </div>
-
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-slate-400" />
               <span>{reservation.partySize} guests</span>
@@ -688,13 +569,11 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
                 <span className="text-slate-500 text-xs">PT</span>
               </span>
             </div>
-
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-slate-400" />
               <span>Table {reservation.tableNumber}</span>
             </div>
           </div>
-
           {reservation.specialRequests &&
             reservation.specialRequests.length > 0 && (
               <div className="mt-3">
@@ -713,12 +592,10 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
                 </div>
               </div>
             )}
-
           <div className="mt-2 text-xs text-slate-500">
             ID: {reservation.reservationId}
           </div>
         </div>
-
         {reservation.status === "confirmed" && (
           <div className="flex items-center gap-2 ml-4">
             <button
@@ -733,7 +610,6 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
             >
               <Edit className="h-5 w-5" />
             </button>
-
             <button
               onClick={onCancel}
               disabled={!isOnline}
@@ -826,20 +702,37 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
     "Outdoor seating",
   ];
 
+  const formatDateForAPI = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const handleSubmit = () => {
     if (!formData.name || !formData.phone || !formData.date) {
       alert("Please fill in all required fields (Name, Phone, Date)");
-      console.warn("⚠️ Form validation failed - missing required fields");
       return;
     }
-
-    console.log("📝 Submitting form data:", formData);
-    onSubmit(formData);
+    const apiDate = formatDateForAPI(formData.date);
+    if (!apiDate) {
+      alert("Please select a valid date");
+      return;
+    }
+    const selectedDate = new Date(apiDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      alert("Please select a date that is today or in the future");
+      return;
+    }
+    const submitData = { ...formData, date: apiDate };
+    onSubmit(submitData);
   };
 
   const addSpecialRequest = (request) => {
     if (!formData.specialRequests.includes(request)) {
-      console.log(`➕ Adding special request: ${request}`);
       setFormData({
         ...formData,
         specialRequests: [...formData.specialRequests, request],
@@ -848,7 +741,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
   };
 
   const removeSpecialRequest = (request) => {
-    console.log(`➖ Removing special request: ${request}`);
     setFormData({
       ...formData,
       specialRequests: formData.specialRequests.filter((r) => r !== request),
@@ -871,7 +763,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             required
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Phone Number *
@@ -887,7 +778,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             required
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Email (Optional)
@@ -902,7 +792,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             placeholder="john@example.com"
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Party Size *
@@ -922,19 +811,22 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             ))}
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Date * <span className="text-slate-500 text-xs">(MM/DD/YYYY)</span>
           </label>
-          <input
-            type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            min={new Date().toISOString().split("T")[0]}
+          <DatePicker
+            selected={formData.date}
+            onChange={(date) => setFormData({ ...formData, date })}
+            dateFormat="MM/dd/yyyy"
+            minDate={new Date()}
+            placeholderText="MM/DD/YYYY"
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             required
           />
+          <p className="text-xs text-slate-500 mt-1">
+            Click to select date from calendar (MM/DD/YYYY)
+          </p>
         </div>
 
         <div>
@@ -955,12 +847,10 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           </select>
         </div>
       </div>
-
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Special Requests
         </label>
-
         <div className="flex flex-wrap gap-2 mb-3">
           {commonRequests.map((request) => (
             <button
@@ -977,7 +867,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             </button>
           ))}
         </div>
-
         {formData.specialRequests.length > 0 && (
           <div className="mb-3">
             <p className="text-sm text-slate-600 mb-2">Selected requests:</p>
@@ -1000,7 +889,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             </div>
           </div>
         )}
-
         <div className="flex gap-2">
           <input
             type="text"
@@ -1013,7 +901,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
             type="button"
             onClick={() => {
               if (newRequest.trim()) {
-                console.log(`➕ Adding custom request: ${newRequest}`);
                 addSpecialRequest(newRequest.trim());
                 setNewRequest("");
               }
@@ -1024,7 +911,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           </button>
         </div>
       </div>
-
       <div className="flex gap-4 pt-4 border-t border-slate-200">
         <button
           type="button"
@@ -1038,7 +924,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
         >
           {reservation ? "Update Reservation" : "Create Reservation"}
         </button>
-
         <button
           type="button"
           onClick={onCancel}
@@ -1051,11 +936,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
   );
 }
 
-/**
- * ============================================================================
- * MODAL COMPONENT
- * ============================================================================
- */
 function Modal({ children, onClose, title }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1070,7 +950,6 @@ function Modal({ children, onClose, title }) {
             <XCircle className="h-6 w-6" />
           </button>
         </div>
-
         <div className="p-6">{children}</div>
       </div>
     </div>
