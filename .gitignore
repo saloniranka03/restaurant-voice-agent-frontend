@@ -1,7 +1,23 @@
-# Node modules
+/**
+ * Git Ignore Configuration
+ * 
+ * Specifies intentionally untracked files that Git should ignore.
+ * 
+ * Categories:
+ * 1. Dependencies (node_modules)
+ * 2. Build outputs (build/, dist/)
+ * 3. Environment files (.env*)
+ * 4. Log files (*.log)
+ * 5. OS files (.DS_Store)
+ * 6. IDE configuration (.vscode/, .idea/)
+ * 7. Test coverage reports
+ * 8. Miscellaneous temporary files
+ */
+
+# Dependencies
 node_modules/
 
-# Build output
+# Build outputs
 build/
 dist/
 
@@ -10,22 +26,22 @@ dist/
 .env.local
 .env.*.local
 
-# Logs
+# Log files
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS files
 .DS_Store
 
-# IDE files
+# IDE configuration
 .vscode/
 .idea/
 *.swp
 
-# Coverage reports
+# Test coverage
 coverage/
 
-# Misc
+# Miscellaneous
 *.tgz
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
