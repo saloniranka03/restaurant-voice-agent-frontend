@@ -709,10 +709,9 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
       alert("Please select a valid date");
       return;
     }
-    const selectedDate = new Date(formData.date);
+    const selectedDate = new Date(apiDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    selectedDate.setHours(0, 0, 0, 0);
     if (selectedDate < today) {
       alert("Please select a date that is today or in the future");
       return;
