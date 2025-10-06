@@ -49,6 +49,17 @@ import {
 import { api, ApiError, withRetry } from "./services/api";
 import config from "./config";
 
+// ==================== UTILITY FUNCTIONS ====================
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+
 /**
  * ============================================================================
  * MAIN DASHBOARD COMPONENT
@@ -268,16 +279,7 @@ export default function ReservationDashboard() {
     }
   };
 
-  // ==================== UTILITY FUNCTIONS ====================
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
+  
   const filteredReservations = reservations.filter(
     (res) =>
       res.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
