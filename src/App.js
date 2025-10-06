@@ -671,6 +671,11 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
               <span>{reservation.partySize} guests</span>
             </div>
 
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-slate-400" />
+              <span>{reservation.date}</span>
+            </div>
+
             {/* COSMETIC CHANGE: Added PT timezone indicator */}
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
