@@ -388,18 +388,7 @@ export default function ReservationDashboard() {
                     <span className="text-slate-500 text-xs">(MM/DD/YYYY)</span>
                   </label>
                   <DatePicker
-                    selected={
-                      filterDate
-                        ? (() => {
-                            const [year, month, day] = filterDate.split("-");
-                            return new Date(
-                              parseInt(year),
-                              parseInt(month) - 1,
-                              parseInt(day)
-                            );
-                          })()
-                        : null
-                    }
+                    selected={filterDate ? new Date(filterDate) : null}
                     onChange={(date) => {
                       if (date) {
                         const year = date.getFullYear();
