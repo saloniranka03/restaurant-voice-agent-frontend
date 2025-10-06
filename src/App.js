@@ -388,7 +388,18 @@ export default function ReservationDashboard() {
                     <span className="text-slate-500 text-xs">(MM/DD/YYYY)</span>
                   </label>
                   <DatePicker
-                    selected={filterDate ? new Date(filterDate) : null}
+                    selected={
+                      filterDate
+                        ? (() => {
+                            const [year, month, day] = filterDate.split("-");
+                            return new Date(
+                              parseInt(year),
+                              parseInt(month) - 1,
+                              parseInt(day)
+                            );
+                          })()
+                        : null
+                    }
                     onChange={(date) => {
                       if (date) {
                         const year = date.getFullYear();
@@ -709,9 +720,10 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
       alert("Please select a valid date");
       return;
     }
-    const selectedDate = new Date(apiDate);
+    const selectedDate = new Date(formData.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
     if (selectedDate < today) {
       alert("Please select a date that is today or in the future");
       return;
