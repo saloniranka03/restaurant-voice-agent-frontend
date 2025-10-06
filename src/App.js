@@ -17,6 +17,7 @@
  * ✅ Network Detection - Offline indicator and reconnection
  * ✅ Loading States - Clear feedback during operations
  * ✅ Timezone Clarity - Shows Pacific Time (PT) for all times
+ * ✅ Configurable Phone Number - Via environment variables
  *
  * TIMEZONE HANDLING:
  * ------------------
@@ -323,6 +324,23 @@ export default function ReservationDashboard() {
         className="bg-white shadow-sm border-b border-slate-200"
         style={{ marginTop: error || !isOnline ? "48px" : "0" }}
       >
+        {/* Top Bar with Phone Number */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <Phone className="h-4 w-4" />
+              <span>Prefer to call? Make a reservation by phone at</span>
+              <a
+                href={`tel:${config.RESERVATION_PHONE}`}
+                className="font-semibold underline hover:text-blue-100 transition-colors"
+              >
+                {config.RESERVATION_PHONE}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -632,8 +650,6 @@ function StatCard({ title, value, icon, color }) {
  * ============================================================================
  * RESERVATION CARD COMPONENT
  * ============================================================================
- *
- * COSMETIC CHANGE: Added "PT" timezone indicator to time display
  */
 function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
   const statusColors = {
@@ -671,7 +687,6 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
               <span>{reservation.partySize} guests</span>
             </div>
 
-            {/* COSMETIC CHANGE: Added PT timezone indicator */}
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <span>
@@ -748,8 +763,6 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
  * ============================================================================
  * RESERVATION FORM COMPONENT
  * ============================================================================
- *
- * COSMETIC CHANGE: Added "(Pacific Time)" to Time label
  */
 function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
   const [formData, setFormData] = useState({
@@ -910,7 +923,6 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           />
         </div>
 
-        {/* COSMETIC CHANGE: Added "(Pacific Time)" to label */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Time * <span className="text-slate-500">(Pacific Time)</span>
