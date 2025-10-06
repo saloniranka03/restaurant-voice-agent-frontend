@@ -915,6 +915,7 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           </select>
         </div>
 
+            
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Date *
