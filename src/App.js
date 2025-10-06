@@ -49,6 +49,17 @@ import {
 import { api, ApiError, withRetry } from "./services/api";
 import config from "./config";
 
+// ==================== UTILITY FUNCTIONS ====================
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+
 /**
  * ============================================================================
  * MAIN DASHBOARD COMPONENT
@@ -268,16 +279,7 @@ export default function ReservationDashboard() {
     }
   };
 
-  // ==================== UTILITY FUNCTIONS ====================
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
+  
   const filteredReservations = reservations.filter(
     (res) =>
       res.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -688,6 +690,12 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
             </div>
 
             <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-slate-400" />
+              <span>{reservation.date.slice(0, 10)}</span>
+            </div>
+
+            {/* COSMETIC CHANGE: Added PT timezone indicator */}
+            <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <span>
                 {reservation.time}{" "}
@@ -909,6 +917,7 @@ function ReservationForm({ reservation, onSubmit, onCancel, isOnline }) {
           </select>
         </div>
 
+            
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Date *
