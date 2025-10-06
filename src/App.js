@@ -691,7 +691,7 @@ function ReservationCard({ reservation, onEdit, onCancel, isOnline }) {
 
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-slate-400" />
-              <span>{formatDate(reservation.date)}</span>
+              <span>{reservation.date.slice(0, 10)}</span>
             </div>
 
             {/* COSMETIC CHANGE: Added PT timezone indicator */}
