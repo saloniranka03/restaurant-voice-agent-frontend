@@ -271,7 +271,7 @@ After deploying to Vercel, test the live application:
 #### 1. Verify Deployment
 ```bash
 # Check backend health
-curl https://your-backend.onrender.com/health
+curl https://your-backend.railway.com/health
 
 # Should return: {"status":"ok",...}
 ```
